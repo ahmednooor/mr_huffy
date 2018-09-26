@@ -19,7 +19,7 @@ use std::io::prelude::*;
 use std::fs::File;
 
 
-pub fn encode(input_bytes: &Vec<u8>) -> Vec<u8> {
+pub fn encode(input_bytes: &mut Vec<u8>) -> Vec<u8> {
     if input_bytes.len() < 2 { return input_bytes.clone(); }
 
     let freq_map = get_freq_map(&input_bytes);
@@ -52,13 +52,13 @@ pub fn encode(input_bytes: &Vec<u8>) -> Vec<u8> {
 pub fn encode_file(input_file_path: &str, 
                    output_file_path: &str) -> (u8, String) {
     
-    let input_bytes = match read_bytes(&input_file_path) {
+    let mut input_bytes = match read_bytes(&input_file_path) {
         Err(_) => return (1, String::from(
                 "[ERR 'encode_file']: Could Not Read Input File!"
             )),
         Ok(bytes) => bytes
     };
-    let mut encoded_output_bytes = encode(&input_bytes);
+    let mut encoded_output_bytes = encode(&mut input_bytes);
     
     let is_outfile_written = 
         write_bytes(&output_file_path, &mut encoded_output_bytes);
@@ -72,15 +72,15 @@ pub fn encode_file(input_file_path: &str,
     (0, String::from("File Encoded Successfully!"))
 }
 
-pub fn decode(encoded_input_bytes: &Vec<u8>) -> Vec<u8> {
+pub fn decode(encoded_input_bytes: &mut Vec<u8>) -> Vec<u8> {
     if encoded_input_bytes.len() < 2 { return encoded_input_bytes.clone(); }
     
-    let (freq_bytes, encoded_bytes) = 
-        sep_freq_and_encoded_bytes(&encoded_input_bytes);
+    let (mut freq_bytes, encoded_bytes) = 
+        sep_freq_and_encoded_bytes(encoded_input_bytes);
     // println!("{:?}", freq_bytes);
     // println!("{:?}", encoded_bytes);
 
-    let freq_map = freq_bytes_to_freq_map(&freq_bytes);
+    let freq_map = freq_bytes_to_freq_map(&mut freq_bytes);
     // println!("{:?}", freq_map);
     
     let tree = make_tree(&freq_map);
@@ -100,13 +100,13 @@ pub fn decode(encoded_input_bytes: &Vec<u8>) -> Vec<u8> {
 pub fn decode_file(input_file_path: &str, 
                    output_file_path: &str) -> (u8, String) {
     
-    let input_bytes = match read_bytes(&input_file_path) {
+    let mut input_bytes = match read_bytes(&input_file_path) {
         Err(_) => return (1, String::from(
                 "[ERR 'decode_file']: Could Not Read Input File!"
             )),
         Ok(bytes) => bytes
     };
-    let mut encoded_output_bytes = decode(&input_bytes);
+    let mut encoded_output_bytes = decode(&mut input_bytes);
     
     let is_outfile_written = 
         write_bytes(&output_file_path, &mut encoded_output_bytes);

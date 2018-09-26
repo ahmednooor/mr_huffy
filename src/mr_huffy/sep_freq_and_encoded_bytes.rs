@@ -2,8 +2,8 @@
 
 use mr_huffy::helpers::*;
 
-pub fn sep_freq_and_encoded_bytes(input_bytes: &Vec<u8>) -> (Vec<u8>, Vec<u8>) {
-    let mut input_bytes = input_bytes.clone();
+pub fn sep_freq_and_encoded_bytes(input_bytes: &mut Vec<u8>) -> (Vec<u8>, Vec<u8>) {
+    // let mut input_bytes = input_bytes.clone();
 
     let freq_bytes_len: u32 = u8_arr_to_u32(
         [input_bytes.remove(0),

@@ -3,7 +3,7 @@
 use mr_huffy::make_tree::*;
 
 pub fn decoded_bytes_from_bitstring_and_tree(bitstring: &String, 
-                                         tree: &Tree) -> Vec<u8> {
+                                             tree: &Tree) -> Vec<u8> {
     let mut actual_bytes: Vec<u8> = Vec::new();
     let mut current_node = tree;
 

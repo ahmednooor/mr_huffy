@@ -2,8 +2,8 @@
 
 use mr_huffy::helpers::*;
 
-pub fn freq_bytes_to_freq_map(freq_bytes: &Vec<u8>) -> Vec<(u8, u32)> {
-    let mut freq_bytes = freq_bytes.clone();
+pub fn freq_bytes_to_freq_map(freq_bytes: &mut Vec<u8>) -> Vec<(u8, u32)> {
+    // let mut freq_bytes = freq_bytes.clone();
     let mut freq_map: Vec<(u8, u32)> = Vec::new();
 
     while freq_bytes.len() > 0 {
