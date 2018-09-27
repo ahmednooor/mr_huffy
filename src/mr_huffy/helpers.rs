@@ -1,21 +1,21 @@
 
 
-pub fn u32_from_bitstring(bitstring: &str) -> u32 {
-    let bitstring = String::from(bitstring)
-        .chars().rev().collect::<String>();
+// pub fn u32_from_bitstring(bitstring: &str) -> u32 {
+//     let bitstring = String::from(bitstring)
+//         .chars().rev().collect::<String>();
     
-    let mut power: u64 = 1;
-    let mut return_int: u32 = 0;
+//     let mut power: u64 = 1;
+//     let mut return_int: u32 = 0;
 
-    for bit in bitstring.chars() {
-        if bit == '1' {
-            return_int += power as u32;
-        }
-        power = power * 2;
-    }
+//     for bit in bitstring.chars() {
+//         if bit == '1' {
+//             return_int += power as u32;
+//         }
+//         power = power * 2;
+//     }
 
-    return_int
-}
+//     return_int
+// }
 
 pub fn u8_from_bitstring(bitstring: &str) -> u8 {
     let bitstring = String::from(bitstring)
@@ -101,17 +101,25 @@ pub fn u8_to_bitstring(integer: u8) -> String {
 }
 
 pub fn u8_arr_to_u32(u8_arr: [u8; 4]) -> u32 {
-    let mut u32_bitstring = String::new();
-
-    for integer in u8_arr.iter() {
-        u32_bitstring.push_str(
-            u8_to_bitstring(integer.clone()).as_str()
-        )
-    }
-
-    let u32int: u32 = u32_from_bitstring(&u32_bitstring[..]);
-    u32int
+    let b1 : u32 = ((u8_arr[0] as u32) << 24) as u32;
+    let b2 : u32 = ((u8_arr[1] as u32) << 16) as u32;
+    let b3 : u32 = ((u8_arr[2] as u32) << 8) as u32;
+    let b4 : u32 = ((u8_arr[3] as u32)) as u32;
+    b1 + b2 + b3 + b4
 }
+
+// pub fn u8_arr_to_u32(u8_arr: [u8; 4]) -> u32 {
+//     let mut u32_bitstring = String::new();
+
+//     for integer in u8_arr.iter() {
+//         u32_bitstring.push_str(
+//             u8_to_bitstring(integer.clone()).as_str()
+//         )
+//     }
+
+//     let u32int: u32 = u32_from_bitstring(&u32_bitstring[..]);
+//     u32int
+// }
 
 // fn __u8_to_bitstring(integer: u8) -> String {
 //     let mut integer = integer;
