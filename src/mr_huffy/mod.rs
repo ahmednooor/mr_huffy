@@ -1,4 +1,4 @@
-mod helpers;
+mod helpers; use self::helpers::*;
 
 mod get_freq_map; use self::get_freq_map::*;
 mod make_tree; use self::make_tree::*;
@@ -14,40 +14,37 @@ mod encoded_bytes_to_bitstring; use self::encoded_bytes_to_bitstring::*;
 mod decoded_bytes_from_bitstring_and_tree; 
     use self::decoded_bytes_from_bitstring_and_tree::*;
 
-use std::io;
-use std::io::prelude::*;
-use std::fs::File;
-
 
 pub fn encode(input_bytes: &mut Vec<u8>) -> Vec<u8> {
+    // use std::time::{SystemTime, UNIX_EPOCH};
+    // let et1 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    // let et2 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    // println!("[]Time Took: \t{:?}", et2 - et1);
+
     if input_bytes.len() < 2 { return input_bytes.clone(); }
 
     let freq_map = get_freq_map(&input_bytes);
-    // println!("{:?}", freq_map);
 
-    let tree = make_tree(&freq_map);
-    // println!("{:?}", tree);
+    let tree = make_tree(&freq_map);    
 
     let comrpessed_bits_map = get_comrpessed_bits_map(&tree);
-    // println!("{:?}", comrpessed_bits_map);
 
     let compressed_bitstring = make_bitstring(&comrpessed_bits_map, 
                                               &input_bytes);
-    // println!("{}", compressed_bitstring);
-
-    let encoded_bytes = bitstring_to_encoded_bytes(&compressed_bitstring);
-    // println!("{:?}", encoded_bytes);
+    let encoded_bytes = bitstring_to_encoded_bytes(compressed_bitstring);
 
     let freq_bytes = freq_map_to_bytes(&freq_map);
-    // println!("{:?}", freq_bytes);
 
     let encoded_output_bytes = 
         comb_freq_and_encoded_bytes(&freq_bytes, 
                                     &encoded_bytes);
-    // println!("{:?}", encoded_output_bytes);
+
+    // let mut decoded_bytes = decode(&mut encoded_output_bytes.clone());
+    // println!("['encode', 'decode']: {}", input_bytes == (&mut decoded_bytes));
     
     encoded_output_bytes
 }
+
 
 pub fn encode_file(input_file_path: &str, 
                    output_file_path: &str) -> (u8, String) {
@@ -72,30 +69,30 @@ pub fn encode_file(input_file_path: &str,
     (0, String::from("File Encoded Successfully!"))
 }
 
+
 pub fn decode(encoded_input_bytes: &mut Vec<u8>) -> Vec<u8> {
+    // use std::time::{SystemTime, UNIX_EPOCH};
+    // let et1 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    // let et2 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
+    // println!("[]Time Took: \t{:?}", et2 - et1);
+
     if encoded_input_bytes.len() < 2 { return encoded_input_bytes.clone(); }
     
     let (mut freq_bytes, encoded_bytes) = 
         sep_freq_and_encoded_bytes(encoded_input_bytes);
-    // println!("{:?}", freq_bytes);
-    // println!("{:?}", encoded_bytes);
-
+    
     let freq_map = freq_bytes_to_freq_map(&mut freq_bytes);
-    // println!("{:?}", freq_map);
     
     let tree = make_tree(&freq_map);
-    // println!("{:#?}", tree);
-
+    
     let compressed_bitstring = encoded_bytes_to_bitstring(&encoded_bytes);
-    // println!("{}", compressed_bitstring);
-
+    
     let decoded_bytes = 
         decoded_bytes_from_bitstring_and_tree(&compressed_bitstring, 
                                               &tree);
-    // println!("{:?}", decoded_bytes);
-
     decoded_bytes
 }
+
 
 pub fn decode_file(input_file_path: &str, 
                    output_file_path: &str) -> (u8, String) {
@@ -118,28 +115,4 @@ pub fn decode_file(input_file_path: &str,
     }
 
     (0, String::from("File Decoded Successfully!"))
-}
-
-
-pub fn read_bytes(file_path: &str) -> io::Result<Vec<u8>> {
-    /* taken from,
-    https://doc.rust-lang.org/std/io/trait.Read.html
-    */
-    let mut f = File::open(file_path)?;
-    let mut buffer: Vec<u8> = Vec::new();
-
-    // read the whole file
-    f.read_to_end(&mut buffer)?;
-    Ok(buffer)
-}
-
-pub fn write_bytes(file_path: &str, bytes: &mut Vec<u8>) -> io::Result<()> {
-    /* taken from,
-    https://doc.rust-lang.org/std/fs/struct.File.html
-    */
-    let mut f = File::create(file_path)?;
-
-    // write the whole buffer
-    f.write_all(bytes)?;
-    Ok(())
 }

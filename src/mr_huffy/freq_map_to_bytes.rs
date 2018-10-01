@@ -6,7 +6,7 @@ pub fn freq_map_to_bytes(freq_map: &Vec<(u8, u32)>) -> Vec<u8> {
     let mut freq_bytes: Vec<u8> = Vec::new();
 
     for item in freq_map {
-        let u32_byte_arr = transform_u32_to_array_of_u8(item.1);
+        let u32_byte_arr = u32_to_u8_arr(item.1);
         freq_bytes.push(item.0);
         freq_bytes.push(u32_byte_arr[0]);
         freq_bytes.push(u32_byte_arr[1]);

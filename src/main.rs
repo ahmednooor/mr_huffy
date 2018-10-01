@@ -65,9 +65,9 @@ fn test_file(input_file_path: &str,
         return false;
     }
 
-    let input_bytes = mr_huffy::read_bytes(input_file_path).unwrap();
-    let encoded_bytes = mr_huffy::read_bytes(output_file_path).unwrap();
-    let decoded_bytes = mr_huffy::read_bytes(decoded_output_file_path).unwrap();
+    let input_bytes = read_bytes(input_file_path).unwrap();
+    let encoded_bytes = read_bytes(output_file_path).unwrap();
+    let decoded_bytes = read_bytes(decoded_output_file_path).unwrap();
 
     let is_input_and_decoded_same = input_bytes == decoded_bytes;
     println!("");
@@ -92,9 +92,18 @@ fn test_file(input_file_path: &str,
     true
 }
 
+use std::io;
+use std::io::prelude::*;
+use std::fs::File;
 
+fn read_bytes(file_path: &str) -> io::Result<Vec<u8>> {
+    /* taken from,
+    https://doc.rust-lang.org/std/io/trait.Read.html
+    */
+    let mut f = File::open(file_path)?;
+    let mut buffer: Vec<u8> = Vec::new();
 
-
-
-
-
+    // read the whole file
+    f.read_to_end(&mut buffer)?;
+    Ok(buffer)
+}

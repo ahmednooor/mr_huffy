@@ -1,5 +1,370 @@
 
 
+use std::io;
+use std::io::prelude::*;
+use std::fs::File;
+
+pub fn read_bytes(file_path: &str) -> io::Result<Vec<u8>> {
+    /* taken from,
+    https://doc.rust-lang.org/std/io/trait.Read.html
+    */
+    let mut f = File::open(file_path)?;
+    let mut buffer: Vec<u8> = Vec::new();
+
+    // read the whole file
+    f.read_to_end(&mut buffer)?;
+    Ok(buffer)
+}
+
+pub fn write_bytes(file_path: &str, bytes: &mut Vec<u8>) -> io::Result<()> {
+    /* taken from,
+    https://doc.rust-lang.org/std/fs/struct.File.html
+    */
+    let mut f = File::create(file_path)?;
+
+    // write the whole buffer
+    f.write_all(bytes)?;
+    Ok(())
+}
+
+
+pub fn add_offset_to_bitstring(mut bitstring: String) -> String {
+    bitstring = String::from("1".to_owned() + &bitstring);
+    let offset: u8 = (8 - bitstring.len() % 8) as u8;
+    let mut offset_bits = String::new();
+    
+    if offset > 0 && offset < 8 {
+        for _ in 0..offset {
+            offset_bits.push('0');
+        }
+    }
+
+    bitstring = String::from(offset_bits + &bitstring);    
+    bitstring
+}
+
+pub fn remove_offset_from_bitstring(mut bitstring: String) -> String {
+    let mut offset_index: usize = 0;
+    
+    for (index, ch) in bitstring.chars().enumerate() {
+        if ch == '1' {
+            offset_index = index + 1;
+            break;
+        }
+    }
+
+    if offset_index < bitstring.len() {
+        bitstring = String::from(bitstring[offset_index..].to_owned());
+    } else {
+        bitstring = String::from(bitstring[..].to_owned());
+    }
+
+    bitstring
+}
+
+
+pub fn u32_to_u8_arr(x: u32) -> [u8; 4] {
+    /* taken from,
+    https://users.rust-lang.org/t/how-to-serialize-a-u32-into-byte-array/986/5
+    */
+    let b1: u8 = ((x >> 24) & 0xff) as u8;
+    let b2: u8 = ((x >> 16) & 0xff) as u8;
+    let b3: u8 = ((x >> 8) & 0xff) as u8;
+    let b4: u8 = (x & 0xff) as u8;
+    [b1, b2, b3, b4]
+}
+
+pub fn u8_arr_to_u32(u8_arr: [u8; 4]) -> u32 {
+    let b1: u32 = ((u8_arr[0] as u32) << 24) as u32;
+    let b2: u32 = ((u8_arr[1] as u32) << 16) as u32;
+    let b3: u32 = ((u8_arr[2] as u32) << 8) as u32;
+    let b4: u32 = ((u8_arr[3] as u32)) as u32;
+    b1 + b2 + b3 + b4
+}
+
+
+pub fn u8_to_bitstring(integer: u8) -> String {
+    let bitstring = 
+        U8_BITSTR_ARR[integer as usize].1
+        .clone().to_string();
+    
+    bitstring
+}
+
+pub fn u8_from_bitstring(bitstring: &str) -> u8 {
+    let mut return_int: u8 = 0;
+    let mut pow: u8 = 128;
+    
+    for bit in bitstring.chars() {
+        if bit == '1' {
+            return_int += pow;
+        }
+        pow /= 2;
+    }
+
+    return_int
+}
+
+static U8_BITSTR_ARR: [(u8, &str); 256] = [
+    (0, "00000000"),
+    (1, "00000001"),
+    (2, "00000010"),
+    (3, "00000011"),
+    (4, "00000100"),
+    (5, "00000101"),
+    (6, "00000110"),
+    (7, "00000111"),
+    (8, "00001000"),
+    (9, "00001001"),
+    (10, "00001010"),
+    (11, "00001011"),
+    (12, "00001100"),
+    (13, "00001101"),
+    (14, "00001110"),
+    (15, "00001111"),
+    (16, "00010000"),
+    (17, "00010001"),
+    (18, "00010010"),
+    (19, "00010011"),
+    (20, "00010100"),
+    (21, "00010101"),
+    (22, "00010110"),
+    (23, "00010111"),
+    (24, "00011000"),
+    (25, "00011001"),
+    (26, "00011010"),
+    (27, "00011011"),
+    (28, "00011100"),
+    (29, "00011101"),
+    (30, "00011110"),
+    (31, "00011111"),
+    (32, "00100000"),
+    (33, "00100001"),
+    (34, "00100010"),
+    (35, "00100011"),
+    (36, "00100100"),
+    (37, "00100101"),
+    (38, "00100110"),
+    (39, "00100111"),
+    (40, "00101000"),
+    (41, "00101001"),
+    (42, "00101010"),
+    (43, "00101011"),
+    (44, "00101100"),
+    (45, "00101101"),
+    (46, "00101110"),
+    (47, "00101111"),
+    (48, "00110000"),
+    (49, "00110001"),
+    (50, "00110010"),
+    (51, "00110011"),
+    (52, "00110100"),
+    (53, "00110101"),
+    (54, "00110110"),
+    (55, "00110111"),
+    (56, "00111000"),
+    (57, "00111001"),
+    (58, "00111010"),
+    (59, "00111011"),
+    (60, "00111100"),
+    (61, "00111101"),
+    (62, "00111110"),
+    (63, "00111111"),
+    (64, "01000000"),
+    (65, "01000001"),
+    (66, "01000010"),
+    (67, "01000011"),
+    (68, "01000100"),
+    (69, "01000101"),
+    (70, "01000110"),
+    (71, "01000111"),
+    (72, "01001000"),
+    (73, "01001001"),
+    (74, "01001010"),
+    (75, "01001011"),
+    (76, "01001100"),
+    (77, "01001101"),
+    (78, "01001110"),
+    (79, "01001111"),
+    (80, "01010000"),
+    (81, "01010001"),
+    (82, "01010010"),
+    (83, "01010011"),
+    (84, "01010100"),
+    (85, "01010101"),
+    (86, "01010110"),
+    (87, "01010111"),
+    (88, "01011000"),
+    (89, "01011001"),
+    (90, "01011010"),
+    (91, "01011011"),
+    (92, "01011100"),
+    (93, "01011101"),
+    (94, "01011110"),
+    (95, "01011111"),
+    (96, "01100000"),
+    (97, "01100001"),
+    (98, "01100010"),
+    (99, "01100011"),
+    (100, "01100100"),
+    (101, "01100101"),
+    (102, "01100110"),
+    (103, "01100111"),
+    (104, "01101000"),
+    (105, "01101001"),
+    (106, "01101010"),
+    (107, "01101011"),
+    (108, "01101100"),
+    (109, "01101101"),
+    (110, "01101110"),
+    (111, "01101111"),
+    (112, "01110000"),
+    (113, "01110001"),
+    (114, "01110010"),
+    (115, "01110011"),
+    (116, "01110100"),
+    (117, "01110101"),
+    (118, "01110110"),
+    (119, "01110111"),
+    (120, "01111000"),
+    (121, "01111001"),
+    (122, "01111010"),
+    (123, "01111011"),
+    (124, "01111100"),
+    (125, "01111101"),
+    (126, "01111110"),
+    (127, "01111111"),
+    (128, "10000000"),
+    (129, "10000001"),
+    (130, "10000010"),
+    (131, "10000011"),
+    (132, "10000100"),
+    (133, "10000101"),
+    (134, "10000110"),
+    (135, "10000111"),
+    (136, "10001000"),
+    (137, "10001001"),
+    (138, "10001010"),
+    (139, "10001011"),
+    (140, "10001100"),
+    (141, "10001101"),
+    (142, "10001110"),
+    (143, "10001111"),
+    (144, "10010000"),
+    (145, "10010001"),
+    (146, "10010010"),
+    (147, "10010011"),
+    (148, "10010100"),
+    (149, "10010101"),
+    (150, "10010110"),
+    (151, "10010111"),
+    (152, "10011000"),
+    (153, "10011001"),
+    (154, "10011010"),
+    (155, "10011011"),
+    (156, "10011100"),
+    (157, "10011101"),
+    (158, "10011110"),
+    (159, "10011111"),
+    (160, "10100000"),
+    (161, "10100001"),
+    (162, "10100010"),
+    (163, "10100011"),
+    (164, "10100100"),
+    (165, "10100101"),
+    (166, "10100110"),
+    (167, "10100111"),
+    (168, "10101000"),
+    (169, "10101001"),
+    (170, "10101010"),
+    (171, "10101011"),
+    (172, "10101100"),
+    (173, "10101101"),
+    (174, "10101110"),
+    (175, "10101111"),
+    (176, "10110000"),
+    (177, "10110001"),
+    (178, "10110010"),
+    (179, "10110011"),
+    (180, "10110100"),
+    (181, "10110101"),
+    (182, "10110110"),
+    (183, "10110111"),
+    (184, "10111000"),
+    (185, "10111001"),
+    (186, "10111010"),
+    (187, "10111011"),
+    (188, "10111100"),
+    (189, "10111101"),
+    (190, "10111110"),
+    (191, "10111111"),
+    (192, "11000000"),
+    (193, "11000001"),
+    (194, "11000010"),
+    (195, "11000011"),
+    (196, "11000100"),
+    (197, "11000101"),
+    (198, "11000110"),
+    (199, "11000111"),
+    (200, "11001000"),
+    (201, "11001001"),
+    (202, "11001010"),
+    (203, "11001011"),
+    (204, "11001100"),
+    (205, "11001101"),
+    (206, "11001110"),
+    (207, "11001111"),
+    (208, "11010000"),
+    (209, "11010001"),
+    (210, "11010010"),
+    (211, "11010011"),
+    (212, "11010100"),
+    (213, "11010101"),
+    (214, "11010110"),
+    (215, "11010111"),
+    (216, "11011000"),
+    (217, "11011001"),
+    (218, "11011010"),
+    (219, "11011011"),
+    (220, "11011100"),
+    (221, "11011101"),
+    (222, "11011110"),
+    (223, "11011111"),
+    (224, "11100000"),
+    (225, "11100001"),
+    (226, "11100010"),
+    (227, "11100011"),
+    (228, "11100100"),
+    (229, "11100101"),
+    (230, "11100110"),
+    (231, "11100111"),
+    (232, "11101000"),
+    (233, "11101001"),
+    (234, "11101010"),
+    (235, "11101011"),
+    (236, "11101100"),
+    (237, "11101101"),
+    (238, "11101110"),
+    (239, "11101111"),
+    (240, "11110000"),
+    (241, "11110001"),
+    (242, "11110010"),
+    (243, "11110011"),
+    (244, "11110100"),
+    (245, "11110101"),
+    (246, "11110110"),
+    (247, "11110111"),
+    (248, "11111000"),
+    (249, "11111001"),
+    (250, "11111010"),
+    (251, "11111011"),
+    (252, "11111100"),
+    (253, "11111101"),
+    (254, "11111110"),
+    (255, "11111111"),
+];
+
+
 // pub fn u32_from_bitstring(bitstring: &str) -> u32 {
 //     let bitstring = String::from(bitstring)
 //         .chars().rev().collect::<String>();
@@ -17,96 +382,38 @@
 //     return_int
 // }
 
-pub fn u8_from_bitstring(bitstring: &str) -> u8 {
-    let bitstring = String::from(bitstring)
-        .chars().rev().collect::<String>();
+// pub fn u8_to_bitstring(integer: u8) -> String {
+//     let mut bitstring = format!("{:b}", integer)
+//         .chars().rev().collect::<String>();
+
+//     let offset = {
+//         8 - bitstring.len()
+//     };
+
+//     for _ in 0..offset {
+//         bitstring.push('0')
+//     }
     
-    let mut power: u32 = 1;
-    let mut return_int: u8 = 0;
+//     bitstring = bitstring.chars().rev().collect::<String>();
+//     bitstring
+// }
 
-    for bit in bitstring.chars() {
-        if bit == '1' {
-            return_int += power as u8;
-        }
-        power = power * 2;
-    }
-
-    return_int
-}
-
-pub fn transform_u32_to_array_of_u8(x: u32) -> [u8; 4] {
-    /* taken from,
-    https://users.rust-lang.org/t/how-to-serialize-a-u32-into-byte-array/986/5
-    */
-
-    let b1 : u8 = ((x >> 24) & 0xff) as u8;
-    let b2 : u8 = ((x >> 16) & 0xff) as u8;
-    let b3 : u8 = ((x >> 8) & 0xff) as u8;
-    let b4 : u8 = (x & 0xff) as u8;
-
-    [b1, b2, b3, b4]
-}
-
-pub fn remove_offset_from_bitstring(bitstring: &String) -> String {
-    let mut offset_index: usize = 0;
+// pub fn u8_from_bitstring(bitstring: &str) -> u8 {
+//     let bitstring = String::from(bitstring)
+//         .chars().rev().collect::<String>();
     
-    for (index, ch) in bitstring.chars().enumerate() {
-        if ch == '1' {
-            offset_index = index + 1;
-            break;
-        }
-    }
+//     let mut power: u32 = 1;
+//     let mut return_int: u8 = 0;
 
-    let actual_bitstring: String;
+//     for bit in bitstring.chars() {
+//         if bit == '1' {
+//             return_int += power as u8;
+//         }
+//         power = power * 2;
+//     }
 
-    if offset_index < bitstring.len() {
-        actual_bitstring = String::from(bitstring[offset_index..].to_owned());
-    } else {
-        actual_bitstring = String::from(bitstring[..].to_owned());
-    }
-
-    actual_bitstring
-}
-
-pub fn add_offset_to_bitstring(bitstring: &String) -> String {
-    let mut bitstring = String::from("1".to_owned() + bitstring);
-    let offset: u8 = (8 - bitstring.len() % 8) as u8;
-    let mut offset_bits = String::new();
-    
-    if offset > 0 && offset < 8 {
-        for _ in 0..offset {
-            offset_bits.push('0');
-        }
-    }
-    
-    bitstring = String::from(offset_bits + &bitstring);
-    
-    bitstring
-}
-
-pub fn u8_to_bitstring(integer: u8) -> String {
-    let mut bitstring = format!("{:b}", integer)
-        .chars().rev().collect::<String>();
-
-    let offset = {
-        8 - bitstring.len()
-    };
-
-    for _ in 0..offset {
-        bitstring.push('0')
-    }
-    
-    bitstring = bitstring.chars().rev().collect::<String>();
-    bitstring
-}
-
-pub fn u8_arr_to_u32(u8_arr: [u8; 4]) -> u32 {
-    let b1 : u32 = ((u8_arr[0] as u32) << 24) as u32;
-    let b2 : u32 = ((u8_arr[1] as u32) << 16) as u32;
-    let b3 : u32 = ((u8_arr[2] as u32) << 8) as u32;
-    let b4 : u32 = ((u8_arr[3] as u32)) as u32;
-    b1 + b2 + b3 + b4
-}
+//     return_int
+// }
 
 // pub fn u8_arr_to_u32(u8_arr: [u8; 4]) -> u32 {
 //     let mut u32_bitstring = String::new();

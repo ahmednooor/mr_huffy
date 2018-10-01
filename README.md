@@ -21,4 +21,4 @@ fn main() {
 ```
 > Start from `mod.rs` in `src/mr_huffy/` for source entry point.
 
-> P.S. It is not so fast and works well with only text files.
+> P.S. It works well with only text files.
