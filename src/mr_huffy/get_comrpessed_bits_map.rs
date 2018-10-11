@@ -35,7 +35,11 @@ pub fn get_comrpessed_bits_map(tree: &Tree) -> HashMap<u8, String> {
         }
     }
 
-    iterate_tree(tree, &mut String::new(), &mut comrpessed_bits_map);
+    if tree.left.is_none() && tree.right.is_none() && tree.byte != None {
+        comrpessed_bits_map.insert(tree.byte.unwrap().clone(), "1".to_string());
+    } else {
+        iterate_tree(tree, &mut String::new(), &mut comrpessed_bits_map);
+    }
 
     comrpessed_bits_map
 }

@@ -21,7 +21,7 @@ pub fn encode(input_bytes: &mut Vec<u8>) -> Vec<u8> {
     // let et2 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     // println!("[]Time Took: \t{:?}", et2 - et1);
 
-    if input_bytes.len() < 2 { return input_bytes.clone(); }
+    if input_bytes.len() < 1 { return input_bytes.clone(); }
 
     let freq_map = get_freq_map(&input_bytes);
 
@@ -76,7 +76,7 @@ pub fn decode(encoded_input_bytes: &mut Vec<u8>) -> Vec<u8> {
     // let et2 = SystemTime::now().duration_since(UNIX_EPOCH).unwrap();
     // println!("[]Time Took: \t{:?}", et2 - et1);
 
-    if encoded_input_bytes.len() < 2 { return encoded_input_bytes.clone(); }
+    if encoded_input_bytes.len() < 1 { return encoded_input_bytes.clone(); }
     
     let (mut freq_bytes, encoded_bytes) = 
         sep_freq_and_encoded_bytes(encoded_input_bytes);
